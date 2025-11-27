@@ -4,6 +4,7 @@
 
 --------------------------------------------------------
 --  CUSTOMER_ACTIVITY
+--  Tracks login/logout activity of customers.
 --------------------------------------------------------
 CREATE TABLE CUSTOMER_ACTIVITY  
 (
@@ -15,6 +16,7 @@ CREATE TABLE CUSTOMER_ACTIVITY
 
 --------------------------------------------------------
 --  CAR
+--  Stores car details
 --------------------------------------------------------
 CREATE TABLE CAR   
 (
@@ -29,6 +31,7 @@ CREATE TABLE CAR
 
 --------------------------------------------------------
 --  CARS_AT_PICKUP
+--  Represents which cars are available at each pickup point.
 --------------------------------------------------------
 CREATE TABLE CARS_AT_PICKUP   
 (
@@ -40,6 +43,7 @@ CREATE TABLE CARS_AT_PICKUP
 
 --------------------------------------------------------
 --  CUSTOMERS
+-- Table storing customer identity details.
 --------------------------------------------------------
 CREATE TABLE CUSTOMERS   
 (
@@ -81,7 +85,7 @@ CREATE TABLE FEEDBACK
 );
 
 --------------------------------------------------------
---  PAYMENT   (correct name — PAYMENT)
+--  PAYMENT 
 --------------------------------------------------------
 CREATE TABLE PAYMENT   
 (
@@ -97,6 +101,7 @@ CREATE TABLE PAYMENT
 
 --------------------------------------------------------
 --  PICKUP_LOCATION
+--  All pickup points available to customers.
 --------------------------------------------------------
 CREATE TABLE PICKUP_LOCATION   
 (
@@ -109,6 +114,7 @@ CREATE TABLE PICKUP_LOCATION
 
 --------------------------------------------------------
 --  RIDE_TRANSACTION
+--  Represents each ride taken by customers.
 --------------------------------------------------------
 CREATE TABLE RIDE_TRANSACTION   
 (
@@ -126,6 +132,7 @@ CREATE TABLE RIDE_TRANSACTION
 
 --------------------------------------------------------
 --  SUPPORT
+--  Customer support tickets.
 --------------------------------------------------------
 CREATE TABLE SUPPORT   
 (
@@ -159,8 +166,8 @@ CREATE TABLE VIOLATIONS_RECORDS
 
 --------------------------------------------------------
 --  CONSTRAINTS
+--  Adds PK, NOT NULL, UNIQUE, and CHECK constraints.
 --------------------------------------------------------
-
 -- SUPPORT
 ALTER TABLE SUPPORT ADD CONSTRAINT SUPPORT_PK PRIMARY KEY (SUPPORT_ID);
 ALTER TABLE SUPPORT MODIFY (TRANS_ID NOT NULL);
@@ -196,7 +203,8 @@ ALTER TABLE PAYMENT ADD CONSTRAINT STATUS_CHECK1 CHECK (STATUS IN ('IN PROCESS',
 
 -- CAR
 ALTER TABLE CAR ADD CONSTRAINT CAR_PK PRIMARY KEY (CAR_ID);
-ALTER TABLE CAR ADD CONSTRAINT CAR_NUMBER_UN UNIQUE (CAR_NUMBER);
+-- Car registration must be unique
+ALTER TABLE CAR ADD CONSTRAINT CAR_NUMBER_UN UNIQUE (CAR_NUMBER); 
 ALTER TABLE CAR MODIFY (CAR_TYPE NOT NULL);
 ALTER TABLE CAR MODIFY (CAR_MODEL NOT NULL);
 ALTER TABLE CAR MODIFY (CAR_MAKE NOT NULL);
@@ -218,9 +226,12 @@ ALTER TABLE CUSTOMERS MODIFY (FIRST_NAME NOT NULL);
 ALTER TABLE CUSTOMERS MODIFY (EMAIL_ID NOT NULL);
 ALTER TABLE CUSTOMERS MODIFY (CONTACT NOT NULL);
 ALTER TABLE CUSTOMERS MODIFY (LICENSE_NUMBER NOT NULL);
-ALTER TABLE CUSTOMERS ADD CONSTRAINT CUSTOMERS_EMAIL_UN UNIQUE (EMAIL_ID);
+-- Prevent duplicate emails
+ALTER TABLE CUSTOMERS ADD CONSTRAINT CUSTOMERS_EMAIL_UN UNIQUE (EMAIL_ID); 
+-- Prevent duplicate phone numbers 
 ALTER TABLE CUSTOMERS ADD CONSTRAINT CUSTOMERS_CONTACT_UN UNIQUE (CONTACT);
-ALTER TABLE CUSTOMERS ADD CONSTRAINT CUSTOMERS_LICENSE_UN UNIQUE (LICENSE_NUMBER);
+-- Unique license  
+ALTER TABLE CUSTOMERS ADD CONSTRAINT CUSTOMERS_LICENSE_UN UNIQUE (LICENSE_NUMBER);  
 
 -- VIOLATIONS
 ALTER TABLE VIOLATIONS ADD CONSTRAINT VIOLATIONS_PK PRIMARY KEY (VIOLATION_ID);
@@ -242,11 +253,13 @@ ALTER TABLE RIDE_TRANSACTION ADD CONSTRAINT STATUS_CHECK2
 
 --------------------------------------------------------
 --  FOREIGN KEYS
+--  Establish relationships between tables.
 --------------------------------------------------------
 
 ALTER TABLE CUSTOMER_ACTIVITY 
     ADD CONSTRAINT CUSTOMER_ACT_FK FOREIGN KEY (CUSTOMER_ID)
-    REFERENCES CUSTOMERS(CUSTOMER_ID) ON DELETE CASCADE;
+    REFERENCES CUSTOMERS(CUSTOMER_ID) ON DELETE CASCADE;      
+    -- Delete activity if customer is deleted
 
 ALTER TABLE CARS_AT_PICKUP 
     ADD CONSTRAINT CARS_PICKUP_POINT_FK FOREIGN KEY (PICKUP_POINT_ID)
@@ -254,11 +267,13 @@ ALTER TABLE CARS_AT_PICKUP
 
 ALTER TABLE CARS_AT_PICKUP 
     ADD CONSTRAINT CARS_CAR_ID_FK FOREIGN KEY (CAR_ID)
-    REFERENCES CAR(CAR_ID) ON DELETE SET NULL;
+    REFERENCES CAR(CAR_ID) ON DELETE SET NULL;  
+    -- If car is removed, set car_id to NULL
 
 ALTER TABLE CUSTOMER_ADDRESS 
     ADD CONSTRAINT CUST_ADDR_FK FOREIGN KEY (CUSTOMER_ID)
-    REFERENCES CUSTOMERS(CUSTOMER_ID) ON DELETE CASCADE;
+    REFERENCES CUSTOMERS(CUSTOMER_ID) ON DELETE CASCADE;  
+    -- Delete addresses when customer is deleted
 
 ALTER TABLE FEEDBACK 
     ADD CONSTRAINT FEEDBACK_TRANS_FK FOREIGN KEY (TRANS_ID)
